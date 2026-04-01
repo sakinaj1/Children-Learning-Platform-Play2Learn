@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Rewards – KidLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef9c3 0%, #ffcc99 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Header & Home Button */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #b45309;
+            margin: 0;
+        }
+
+        .home-btn {
+            background: white;
+            border-radius: 8px;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* LEVEL BANNER - Centered and Wide */
+        .level-banner {
+            margin: 10px auto 30px;
+            background: linear-gradient(to right, #d946ef, #ec4899, #ef4444);
+            border-radius: 20px;
+            padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            color: white;
+            max-width: 1200px;
+        }
+
+        .crown-level {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .level-num {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .level-progress {
+            flex: 1;
+        }
+
+        .lp-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .lp-track {
+            height: 22px;
+            background: #0d1117;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .lp-fill {
+            height: 100%;
+            background: #3b82f6;
+            width: 81%;
+        }
+
+        /* MAIN PROPORTIONAL GRID */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            /* This keeps the proportions balanced like the photo */
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1e1b4b;
+            margin-bottom: 15px;
+        }
+
+        /* LEFT SIDE: ACHIEVEMENTS (Vertical Proportions) */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .ach-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .ach-top {
+            height: 100px;
+            /* Specific height to match photo aspect ratio */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .ach-stars {
+            font-size: 0.8rem;
+            color: #facc15;
+            margin-top: 5px;
+        }
+
+        .ach-label {
+            padding: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            flex-grow: 1;
+            color: #444;
+        }
+
+        .earned-tag {
+            background: #22c55e;
+            color: white;
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 6px;
+            font-weight: 700;
+        }
+
+        /* RIGHT SIDE: SHOP (Square/Compact Proportions) */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .shop-card {
+            background: #ecfdf5;
+            border: 2px solid #6ee7b7;
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        .shop-card.locked {
+            background: white;
+            border-color: #e5e7eb;
+        }
+
+        .shop-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .shop-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .shop-price {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #b45309;
+            margin-bottom: 8px;
+        }
+
+        .status-btn {
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px;
+            width: 100%;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .status-btn.buy {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* CHALLENGES (Small Rectangles) */
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .ch-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        .ch-top {
+            background: #be185d33;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+
+        .ch-name {
+            padding: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* AMAZING FOOTER BOX */
+        .amazing-box {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        /* Badge Colors */
+        .bg-blue {
+            background: #3b82f6;
+        }
+
+        .bg-green {
+            background: #22c55e;
+        }
+
+        .bg-purple {
+            background: #a855f7;
+        }
+
+        .bg-red {
+            background: #ef4444;
+        }
+
+        .bg-orange {
+            background: #f97316;
+        }
+
+        .bg-gold {
+            background: #eab308;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <div>
+            <h1 class="page-title">🏆 My Rewards 🏆</h1>
+            <div style="color: #b45309; font-weight: 600; font-size: 0.9rem;">Look at all you've earned!</div>
+        </div>
+        <a href="home.html" class="home-btn">🏠 Home</a>
+    </div>
+
+    <div class="level-banner">
+        <div style="text-align: center;">
+            <span style="font-size: 3rem;">⭐</span>
+            <div style="font-size: 4rem; font-weight: 800; line-height: 1;" id="ui-total-stars">0</div>
+            <div style="font-size: 1.2rem; font-weight: 600;">Total Stars Earned</div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+
+        <div>
+            <div class="section-title" id="ach-title">🏆 My Achievements (0)</div>
+            <div class="achievement-grid" id="achievements-grid">
+            </div>
+
+            <div class="section-title" style="margin-top: 30px;" id="ch-title">🎯 Next Challenges (0)</div>
+            <div class="challenge-grid" id="challenges-grid">
+            </div>
+        </div>
+
+        <div>
+            <div class="section-title" id="shop-title">⭐ Rewards Shop (Stars: 0)</div>
+            <div class="shop-grid">
+                <div class="shop-card" id="card-unicorn"><span class="shop-icon">🦄</span>
+                    <div class="shop-name">Unicorn</div>
+                    <div class="shop-price">⭐ 100</div><button id="btn-unicorn" class="status-btn buy"
+                        onclick="buyReward('unicorn', 100)">Buy</button>
+                </div>
+                <div class="shop-card" id="card-superhero"><span class="shop-icon">🦸</span>
+                    <div class="shop-name">Superhero</div>
+                    <div class="shop-price">⭐ 150</div><button id="btn-superhero" class="status-btn buy"
+                        onclick="buyReward('superhero', 150)">Buy</button>
+                </div>
+                <div class="shop-card" id="card-wand"><span class="shop-icon">🪄</span>
+                    <div class="shop-name">Magic Wand</div>
+                    <div class="shop-price">⭐ 200</div><button id="btn-wand" class="status-btn buy"
+                        onclick="buyReward('wand', 200)">Buy</button>
+                </div>
+                <div class="shop-card" id="card-dragon"><span class="shop-icon">🐉</span>
+                    <div class="shop-name">Dragon</div>
+                    <div class="shop-price">⭐ 250</div><button id="btn-dragon" class="status-btn buy"
+                        onclick="buyReward('dragon', 250)">Buy</button>
+                </div>
+                <div class="shop-card" id="card-crown"><span class="shop-icon">👑</span>
+                    <div class="shop-name">Crown</div>
+                    <div class="shop-price">⭐ 300</div><button id="btn-crown" class="status-btn buy"
+                        onclick="buyReward('crown', 300)">Buy</button>
+                </div>
+                <div class="shop-card" id="card-rocket"><span class="shop-icon">🚀</span>
+                    <div class="shop-name">Rocket</div>
+                    <div class="shop-price">⭐ 350</div><button id="btn-rocket" class="status-btn buy"
+                        onclick="buyReward('rocket', 350)">Buy</button>
+                </div>
+            </div>
+
+            <div class="amazing-box">
+                <div style="font-size: 2rem;">🌟</div>
+                <h2 style="margin: 10px 0;">You're Amazing!</h2>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Keep learning to unlock more rewards!</p>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        let currentStars = 0;
+        let unlockedRewards = JSON.parse(localStorage.getItem('unlockedRewards') || '[]');
+
+        window.onload = function () {
+            refreshUI();
+        };
+
+        const ALL_GAMES = [
+            { id: "alphabet", name: "Alphabet", icon: "abc", bg: "bg-blue" },
+            { id: "numbers", name: "Numbers", icon: "123", bg: "bg-green" },
+            { id: "colors", name: "Colors", icon: "🎨", bg: "bg-purple" },
+            { id: "shapes", name: "Shapes", icon: "⭐", bg: "bg-gold" },
+            { id: "math", name: "Math", icon: "➕", bg: "bg-orange" },
+            { id: "memory", name: "Memory", icon: "🧠", bg: "bg-red" },
+            { id: "puzzle", name: "Puzzle", icon: "🧩", bg: "bg-blue" },
+            { id: "spelling", name: "Spelling", icon: "🐝", bg: "bg-green" }
+        ];
+
+        function refreshUI() {
+            fetch('/get_progress')
+                .then(res => res.json())
+                .then(data => {
+                    currentStars = data.stars || 0;
+                    document.getElementById('shop-title').innerText = `⭐ Rewards Shop (Stars: ${currentStars})`;
+                    document.getElementById('ui-total-stars').innerText = currentStars;
+                    renderShop();
+
+                    const playedToday = data.played_today || [];
+                    const achGrid = document.getElementById("achievements-grid");
+                    const chGrid = document.getElementById("challenges-grid");
+                    
+                    if (achGrid && chGrid) {
+                        achGrid.innerHTML = "";
+                        chGrid.innerHTML = "";
+                        let achCount = 0;
+                        let chCount = 0;
+
+                        ALL_GAMES.forEach(game => {
+                            if (playedToday.includes(game.id)) {
+                                achGrid.innerHTML += `
+                                    <div class="ach-card">
+                                        <div class="ach-top ${game.bg}"><div style="font-size: 1.5rem; line-height: 1; font-weight: 900;">${game.icon}</div><div class="ach-stars">⭐⭐⭐</div></div>
+                                        <div class="ach-label">${game.name} Master</div>
+                                        <div class="earned-tag">✓ Played Today</div>
+                                    </div>`;
+                                achCount++;
+                            } else {
+                                chGrid.innerHTML += `
+                                    <div class="ch-card">
+                                        <div class="ch-top">🔒</div>
+                                        <div class="ch-name">${game.name} Player</div>
+                                    </div>`;
+                                chCount++;
+                            }
+                        });
+
+                        document.getElementById("ach-title").innerText = `🏆 My Achievements (${achCount})`;
+                        document.getElementById("ch-title").innerText = `🎯 Next Challenges (${chCount})`;
+                    }
+                });
+        }
+
+        function renderShop() {
+            const items = ['unicorn', 'superhero', 'wand', 'dragon', 'crown', 'rocket'];
+            items.forEach(item => {
+                const btn = document.getElementById(`btn-${item}`);
+                const card = document.getElementById(`card-${item}`);
+                if (!btn || !card) return;
+
+                if (unlockedRewards.includes(item)) {
+                    btn.className = 'status-btn';
+                    btn.innerText = 'Unlocked!';
+                    btn.onclick = null;
+                    card.classList.remove('locked');
+                } else {
+                    card.classList.add('locked');
+                    btn.className = 'status-btn buy';
+                    btn.innerText = 'Buy';
+                }
+            });
+        }
+
+        function buyReward(itemId, cost) {
+            if (unlockedRewards.includes(itemId)) return;
+
+            if (currentStars >= cost) {
+                fetch('/api/buy_reward', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cost: cost })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            unlockedRewards.push(itemId);
+                            localStorage.setItem('unlockedRewards', JSON.stringify(unlockedRewards));
+
+                            // Keep local star cache in sync to stop UI jitter
+                            localStorage.setItem('stars', data.stars);
+                            refreshUI();
+                        } else {
+                            alert("Failed to purchase: " + data.message);
+                        }
+                    })
+                    .catch(err => alert("Error communicating with server"));
+            } else {
+                alert("You need more stars to buy this!");
+            }
+        }
+    </script>
+</body>
+
+</html>

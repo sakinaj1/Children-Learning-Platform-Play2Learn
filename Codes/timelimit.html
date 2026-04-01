@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Limits & Schedules</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  body { background: linear-gradient(135deg,#f6d365,#fda085); padding: 25px; padding-bottom: 100px; color: #333; min-height: 100vh; }
+
+  /* HEADER */
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .title { font-size: 28px; font-weight: 700; color: #b43d1b; }
+  .subtitle { font-size: 14px; opacity: 0.8; font-weight: 600; color: #b43d1b; }
+  .back { background: #fff; padding: 10px 14px; border-radius: 10px; text-decoration: none; color: #333; font-weight: 500; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
+  .back:hover { background: #f0f0f0; transform: translateY(-1px); }
+
+  /* LAYOUT */
+  .container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  
+  /* CARDS */
+  .card { background: #fffcf8; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; }
+  .card h3 { margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #e65100; }
+
+  .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+  .inner-row { background: #fff5e6; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
+
+  /* TOGGLE SWITCH */
+  .switch { position: relative; width: 40px; height: 20px; flex-shrink: 0; }
+  .switch input { display: none; }
+  .slider-toggle { position: absolute; background: #ccc; border-radius: 20px; top: 0; bottom: 0; left: 0; right: 0; cursor: pointer; transition: .3s; }
+  .slider-toggle:before { content: ""; position: absolute; height: 14px; width: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .3s; }
+  input:checked + .slider-toggle { background: #22c55e; }
+  input:checked + .slider-toggle:before { transform: translateX(20px); }
+
+  /* SLIDER RANGE */
+  input[type="range"] { width: 100%; cursor: pointer; accent-color: #333; margin: 10px 0; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+
+  /* BUTTONS */
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .t-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; background: #eee; font-size: 12px; cursor: pointer; transition: 0.2s; }
+  .t-btn.active { background: #ff6d00; color: white; border-color: #ff6d00; font-weight: 600; }
+
+  /* USAGE BOXES */
+  .usage { background: #fff9c4; border-radius: 16px; padding: 20px; }
+  .usage-box { background: #fff; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 12px; border: 1px solid #f0f0f0; }
+  .usage-val { font-size: 26px; font-weight: 700; }
+  
+  /* SCHEDULE INPUTS */
+  .time-input-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; margin-top: 10px; }
+  .time-input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; background: #fff; }
+  .status-pill { background: #e3f2fd; color: #1e88e5; padding: 8px 12px; border-radius: 8px; font-size: 12px; display: inline-block; margin-top: 15px; font-weight: 600; }
+
+  /* SAVE BAR */
+  .save-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 20px; display: flex; justify-content: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; }
+  .save-btn { background: #ec4899; color: white; border: none; padding: 14px 60px; border-radius: 14px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+  .save-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="title">⏰ Time Limits & Schedules</div>
+    <div class="subtitle">Manage when and how long your child can use Play2Learn</div>
+  </div>
+  <a href="profile.html" class="back">🏠 Back to Profile</a>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="flex-between">
+      <h3>🕒 Daily Time Limit</h3>
+      <label class="switch">
+        <input type="checkbox" id="dailyLimitToggle" checked onchange="toggleContent('dailyContent', this)">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    
+    <div id="dailyContent">
+        <div class="inner-row">
+            <b>Enable Daily Time Limit</b><br>
+            <small>Restrict total daily screen time</small>
+        </div>
+
+        <div class="flex-between">
+            <label><b>Maximum Daily Time: <span id="limitDisplay">1hr</span></b></label>
+            <div class="btn-group" id="limitBtns">
+                <button class="t-btn" onclick="updateLimit(30, this)">30min</button>
+                <button class="t-btn active" onclick="updateLimit(60, this)">1hr</button>
+                <button class="t-btn" onclick="updateLimit(90, this)">1hr 30min</button>
+                <button class="t-btn" onclick="updateLimit(120, this)">2hr</button>
+            </div>
+        </div>
+        <input type="range" id="limitRange" min="15" max="180" value="60" oninput="syncRange(this.value)">
+        <div class="range-labels"><span>15 min</span><span>3 hours</span></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div class="inner-row" style="margin-bottom: 0;">
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px;">Warning Before End</label>
+                <div class="btn-group" id="warningBtns">
+                    <button class="t-btn" onclick="setActiveBtn('warningBtns', this)">5 min</button>
+                    <button class="t-btn active" onclick="setActiveBtn('warningBtns', this)">10 min</button>
+                    <button class="t-btn" onclick="setActiveBtn('warningBtns', this)">15 min</button>
+                </div>
+            </div>
+            <div class="inner-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+                <div><b>Hard Stop</b><br><small>Force logout</small></div>
+                <label class="switch"><input type="checkbox" id="hardStopToggle" checked><span class="slider-toggle"></span></label>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="usage">
+    <h3>Today's Usage</h3>
+    <div class="usage-box">
+        <div class="usage-val" style="color:#ef4444;">23 min</div>
+        <small>Time Spent</small>
+    </div>
+    <div class="usage-box">
+        <div class="usage-val" style="color:#16a34a;" id="remainingDisplay">37 min</div>
+        <small>Remaining</small>
+    </div>
+    <div style="background:#dbeafe; padding:10px; border-radius:10px; font-size:11px; color: #1e40af; line-height: 1.4;">
+        ℹ These are live stats based on your limit.
+    </div>
+  </div>
+</div>
+
+<div class="bottom-grid">
+  <div class="card">
+    <div class="flex-between">
+      <h3>📅 Weekday Schedule</h3>
+      <label class="switch">
+        <input type="checkbox" id="weekdayToggle" checked onchange="toggleContent('weekdayContent', this)">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div id="weekdayContent">
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Monday - Friday access times</p>
+        <div class="time-input-group">
+            <label>Start Time</label><input type="time" id="weekdayStart" value="15:00" onchange="updateScheduleText()">
+            <label>End Time</label><input type="time" id="weekdayEnd" value="18:00" onchange="updateScheduleText()">
+        </div>
+        <div class="status-pill" id="weekdayPill">📊 Allowed: 15:00 - 18:00</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex-between">
+      <h3>📆 Weekend Schedule</h3>
+      <label class="switch">
+        <input type="checkbox" id="weekendToggle" checked onchange="toggleContent('weekendContent', this)">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+    <div id="weekendContent">
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Saturday - Sunday access times</p>
+        <div class="time-input-group">
+            <label>Start Time</label><input type="time" id="weekendStart" value="09:00" onchange="updateScheduleText()">
+            <label>End Time</label><input type="time" id="weekendEnd" value="17:00" onchange="updateScheduleText()">
+        </div>
+        <div class="status-pill" id="weekendPill" style="background: #f3e5f5; color: #7b1fa2;">🎮 Allowed: 09:00 - 17:00</div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+    <button class="save-btn" onclick="saveData()">💾 Save Time Limits</button>
+</div>
+
+<script>
+  let actualTimeSpent = 0;
+
+  function toggleContent(id, checkbox) {
+    document.getElementById(id).style.display = checkbox.checked ? "block" : "none";
+  }
+
+  function syncRange(val) {
+    updateUI(parseInt(val));
+    document.querySelectorAll('#limitBtns .t-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  function updateLimit(val, btn) {
+    document.getElementById('limitRange').value = val;
+    updateUI(val);
+    if (btn) setActiveBtn('limitBtns', btn);
+  }
+
+  function updateUI(totalMinutes) {
+    let h = Math.floor(totalMinutes / 60);
+    let m = totalMinutes % 60;
+    document.getElementById('limitDisplay').innerText = h > 0 ? `${h}hr ${m > 0 ? m + 'min' : ''}` : `${m}min`;
+
+    const remaining = totalMinutes - actualTimeSpent;
+    const remDisplay = document.getElementById('remainingDisplay');
+    
+    if (remaining <= 0) {
+      remDisplay.innerText = "0 min";
+      remDisplay.style.color = "#ef4444";
+    } else {
+      let rh = Math.floor(remaining / 60);
+      let rm = remaining % 60;
+      remDisplay.innerText = rh > 0 ? `${rh}hr ${rm}min` : `${rm}min`;
+      remDisplay.style.color = "#16a34a";
+    }
+  }
+
+  function updateScheduleText() {
+    const ws = document.getElementById('weekdayStart').value;
+    const we = document.getElementById('weekdayEnd').value;
+    document.getElementById('weekdayPill').innerText = `📊 Allowed: ${ws} - ${we}`;
+
+    const ss = document.getElementById('weekendStart').value;
+    const se = document.getElementById('weekendEnd').value;
+    document.getElementById('weekendPill').innerText = `🎮 Allowed: ${ss} - ${se}`;
+  }
+
+  function setActiveBtn(groupId, btn) {
+    document.querySelectorAll(`#${groupId} .t-btn`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function saveData() {
+    const isDailyLimitOn = document.getElementById('dailyLimitToggle').checked;
+    const limitRange = document.getElementById('limitRange').value;
+    const hardStopToggle = document.getElementById('hardStopToggle');
+    const isHardStopOn = hardStopToggle ? hardStopToggle.checked : true;
+
+    if (isDailyLimitOn) {
+        localStorage.setItem('dailyTimeLimit', limitRange);
+        localStorage.setItem('hardStopEnabled', isHardStopOn);
+        // Set the session start backwards to replicate the mock '23 min' already spent
+        const fakeStart = Date.now() - (actualTimeSpent * 60000); 
+        localStorage.setItem('sessionStartTime', fakeStart);
+    } else {
+        localStorage.removeItem('dailyTimeLimit');
+        localStorage.removeItem('hardStopEnabled');
+    }
+
+    alert('Settings Saved! Returning you to your profile.');
+    window.location.href = "profile.html";
+  }
+
+  window.onload = async () => { 
+    try {
+        const res = await fetch('/get_progress');
+        const data = await res.json();
+        if (data && data.time_spent !== undefined) {
+            actualTimeSpent = Math.floor(data.time_spent / 60);
+        }
+    } catch (e) {
+        console.error("Error fetching time spent:", e);
+    }
+    
+    const usageEls = document.querySelectorAll('.usage-val');
+    if(usageEls.length > 0) {
+        usageEls[0].innerText = actualTimeSpent + " min";
+    }
+
+    let savedLimit = localStorage.getItem('dailyTimeLimit');
+    let limitToUse = savedLimit ? parseInt(savedLimit) : 60;
+    
+    if (savedLimit) {
+        document.getElementById('limitRange').value = limitToUse;
+        document.getElementById('dailyLimitToggle').checked = true;
+        document.getElementById('dailyContent').style.display = 'block';
+        
+        let btns = document.querySelectorAll('#limitBtns .t-btn');
+        let matchedBtn = null;
+        btns.forEach(b => {
+           if((limitToUse === 30 && b.innerText === '30min') ||
+              (limitToUse === 60 && b.innerText === '1hr') ||
+              (limitToUse === 90 && b.innerText === '1hr 30min') ||
+              (limitToUse === 120 && b.innerText === '2hr')) {
+               matchedBtn = b;
+           }
+        });
+        updateLimit(limitToUse, matchedBtn);
+    } else {
+        updateUI(limitToUse); 
+    }
+  };
+</script>
+
+</body>
+</html>

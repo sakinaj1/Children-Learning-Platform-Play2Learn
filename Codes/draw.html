@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Draw & Create – KidLearn</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+body {
+  background: linear-gradient(135deg, #fef9c3 0%, #fde68a 30%, #fce7f3 80%, #f3e8ff 100%);
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+
+.top-bar {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 20px 28px 10px;
+}
+.page-title { font-size: 1.9rem; font-weight: 900; color: var(--purple); display: flex; align-items: center; gap: 10px; }
+.page-sub { font-size: 0.9rem; color: var(--purple); font-weight: 700; }
+
+/* LAYOUT */
+.draw-layout {
+  display: flex; gap: 0; flex: 1; margin: 0 24px 24px; gap: 16px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 200px; min-width: 200px;
+  background: white; border-radius: 18px;
+  padding: 18px 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.sidebar-label {
+  font-size: 0.95rem; font-weight: 800; color: #1e1b4b;
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+
+/* Color grid */
+.color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.color-swatch {
+  height: 52px; border-radius: 12px; cursor: pointer;
+  border: 3px solid transparent; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.color-swatch:hover { transform: scale(1.06); }
+.color-swatch.selected { border-color: #1e1b4b; box-shadow: 0 0 0 3px rgba(30,27,75,0.2); }
+
+/* Size buttons */
+.size-btns { display: flex; flex-direction: column; gap: 8px; }
+.size-btn {
+  padding: 10px; border: 2px solid #e5e7eb; border-radius: 10px;
+  font-family: 'Nunito',sans-serif; font-size: 0.95rem; font-weight: 800;
+  background: white; cursor: pointer; transition: all 0.2s; color: #374151;
+}
+.size-btn:hover { border-color: var(--purple); }
+.size-btn.active { border-color: var(--purple); background: #ede9fe; color: var(--purple); }
+
+/* Tool buttons */
+.tool-btns { display: flex; flex-direction: column; gap: 8px; }
+.tool-btn {
+  padding: 12px; border-radius: 12px; border: none;
+  font-family: 'Nunito',sans-serif; font-size: 1rem; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.tool-btn.draw-tool { background: var(--purple); color: white; }
+.tool-btn.erase-tool { background: #f3f4f6; color: #374151; border: 2px solid #e5e7eb; }
+.tool-btn.active-erase { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+
+.save-btn {
+  background: #dcfce7; color: #16a34a; border: 2px solid #86efac;
+  border-radius: 10px; padding: 8px; font-family: 'Nunito',sans-serif;
+  font-size: 0.85rem; font-weight: 800; cursor: pointer;
+}
+
+.clear-btn {
+  background: #fee2e2; color: #dc2626; border: 2px solid #fca5a5;
+  border-radius: 10px; padding: 8px; font-family: 'Nunito',sans-serif;
+  font-size: 0.85rem; font-weight: 800; cursor: pointer;
+}
+
+/* CANVAS AREA */
+.canvas-wrap {
+  flex: 1; background: white; border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  overflow: hidden; position: relative; cursor: crosshair;
+}
+canvas { display: block; width: 100%; height: 100%; }
+
+/* Mascot */
+.palette-mascot { position: fixed; bottom: 20px; right: 20px; font-size: 2.8rem; animation: spin 4s linear infinite; }
+@keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <div class="page-title">🎨 Draw &amp; Create 🎨</div>
+    <div class="page-sub">Express yourself with colors!</div>
+  </div>
+  <a href="home.html" class="home-btn">🏠 Home</a>
+</div>
+
+<div class="draw-layout">
+  <div class="sidebar">
+
+    <div>
+      <div class="sidebar-label">🎨 Colors</div>
+      <div class="color-grid">
+        <div class="color-swatch selected" style="background:#ef4444;" onclick="setColor('#ef4444',this)">❤️</div>
+        <div class="color-swatch" style="background:#3b82f6;" onclick="setColor('#3b82f6',this)">💙</div>
+        <div class="color-swatch" style="background:#22c55e;" onclick="setColor('#22c55e',this)">💚</div>
+        <div class="color-swatch" style="background:#facc15;" onclick="setColor('#facc15',this)">💛</div>
+        <div class="color-swatch" style="background:#a855f7;" onclick="setColor('#a855f7',this)">💜</div>
+        <div class="color-swatch" style="background:#1a1a1a;" onclick="setColor('#1a1a1a',this)">🖤</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Size</div>
+      <div class="size-btns">
+        <button class="size-btn" onclick="setSize(4,this)">S</button>
+        <button class="size-btn" onclick="setSize(12,this)">M</button>
+        <button class="size-btn active" onclick="setSize(24,this)">L</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="tool-btns">
+        <button class="tool-btn draw-tool" id="drawToolBtn" onclick="setTool('draw')">✏️</button>
+        <button class="tool-btn erase-tool" id="eraseToolBtn" onclick="setTool('erase')">⬜</button>
+      </div>
+    </div>
+
+    <button class="save-btn" onclick="saveDrawing()">💾 Save Drawing</button>
+    <button class="clear-btn" onclick="clearCanvas()">🗑️ Clear All</button>
+
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="drawCanvas"></canvas>
+  </div>
+</div>
+
+<div class="palette-mascot">🎨</div>
+
+<script>
+let settingsState = JSON.parse(localStorage.getItem('kidLearnSettings'));
+if (settingsState && settingsState.categories && settingsState.categories.drawing === false) {
+    alert("🔒 Drawing is currently restricted by parent.");
+    window.location.href = "home.html";
+}
+
+const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+const wrap = document.getElementById('canvasWrap');
+
+let drawing = false;
+let currentColor = '#ef4444';
+let brushSize = 24;
+let tool = 'draw';
+let lastX = 0, lastY = 0;
+
+function resize() {
+  const rect = wrap.getBoundingClientRect();
+  const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  ctx.putImageData(imageData,0,0);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+resize();
+loadDrawing();
+window.addEventListener('resize', resize);
+
+function saveDrawing() {
+  localStorage.setItem('kidLearnDrawing', canvas.toDataURL());
+  const btn = document.querySelector('.save-btn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '✅ Saved!';
+  setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+}
+
+function loadDrawing() {
+  const dataURL = localStorage.getItem('kidLearnDrawing');
+  if (dataURL) {
+    const img = new Image();
+    img.src = dataURL;
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+  }
+}
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const src = e.touches ? e.touches[0] : e;
+  return {
+    x: (src.clientX - rect.left) * scaleX,
+    y: (src.clientY - rect.top) * scaleY,
+  };
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  const {x,y} = getPos(e);
+  lastX = x; lastY = y;
+  ctx.beginPath();
+  ctx.arc(x, y, (tool==='erase'?brushSize*1.5:brushSize)/2, 0, Math.PI*2);
+  ctx.fillStyle = tool==='erase' ? 'white' : currentColor;
+  ctx.fill();
+}
+
+function drawMove(e) {
+  e.preventDefault();
+  if (!drawing) return;
+  const {x,y} = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = tool==='erase' ? 'white' : currentColor;
+  ctx.lineWidth = tool==='erase' ? brushSize*1.5 : brushSize;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  lastX = x; lastY = y;
+}
+
+function stopDraw() { drawing = false; }
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', drawMove);
+canvas.addEventListener('mouseup', stopDraw);
+canvas.addEventListener('mouseleave', stopDraw);
+canvas.addEventListener('touchstart', startDraw, {passive:false});
+canvas.addEventListener('touchmove', drawMove, {passive:false});
+canvas.addEventListener('touchend', stopDraw);
+
+function setColor(c, el) {
+  currentColor = c;
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  setTool('draw');
+}
+
+function setSize(s, el) {
+  brushSize = s;
+  document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setTool(t) {
+  tool = t;
+  if (t==='erase') {
+    document.getElementById('eraseToolBtn').classList.add('active-erase');
+    document.getElementById('drawToolBtn').style.opacity = '0.5';
+  } else {
+    document.getElementById('eraseToolBtn').classList.remove('active-erase');
+    document.getElementById('drawToolBtn').style.opacity = '1';
+  }
+}
+
+function clearCanvas() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+</script>
+</body>
+</html>

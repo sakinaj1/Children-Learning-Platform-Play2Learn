@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Content Restrictions – KidLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --purple: #7c3aed; }
+        * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+        
+        body { 
+            background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 50%, #fae8ff 100%); 
+            min-height: 100vh; margin: 0; padding-bottom: 120px;
+        }
+
+        /* TOP BAR */
+        .top-bar { display: flex; align-items: flex-start; justify-content: space-between; padding: 25px 40px; }
+        .page-title { font-size: 2.2rem; font-weight: 900; color: #6b21a8; margin: 0; }
+        .page-sub { font-size: 1rem; color: #7e22ce; font-weight: 700; margin-top: 5px; }
+        .page-note { font-size: 0.85rem; color: #a855f7; margin-top: 5px; }
+        
+        .top-right { display: flex; align-items: center; gap: 15px; }
+        .saved-badge {
+            background: #22c55e; color: white; padding: 8px 15px; border-radius: 10px;
+            font-weight: 800; font-size: 0.9rem; display: none; animation: fadeIn 0.3s;
+        }
+
+        .back-btn {
+            background: white; padding: 10px 20px; border-radius: 12px;
+            text-decoration: none; color: #333; font-weight: 800; border: 1px solid #e5e7eb;
+            display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* QUICK TOGGLES */
+        .quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 0 40px 25px; }
+        .quick-btn {
+            padding: 16px; border-radius: 15px; border: none; font-size: 1.1rem; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;
+        }
+        .quick-btn:active { transform: scale(0.98); }
+        .allow-btn { background: #dcfce7; color: #15803d; border: 2px solid #b9f6ca; }
+        .restrict-btn { background: #fee2e2; color: #dc2626; border: 2px solid #fecaca; }
+
+        /* MAIN LAYOUT */
+        .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 25px; margin: 0 40px; align-items: start; }
+
+        /* CARDS */
+        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-title { font-size: 1.2rem; font-weight: 900; color: #1e1b4b; margin-bottom: 15px; }
+
+        /* TOGGLE SWITCH */
+        .switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; inset: 0; background-color: #333;
+            transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #22c55e; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* CATEGORIES */
+        .cat-item { display: flex; align-items: center; padding: 12px 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #f3f4f6; }
+        .cat-blue { background: #eff6ff; } .cat-pink { background: #fdf2f8; } .cat-green { background: #f0fdf4; }
+        .cat-info { flex: 1; margin-left: 12px; }
+        .cat-name { font-weight: 800; color: #1e1b4b; font-size: 0.95rem; }
+        .cat-sub { font-size: 0.75rem; color: #6b7280; }
+
+        /* GAME GRID */
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .game-item {
+            border: 2px solid #e5e7eb; border-radius: 15px; padding: 15px;
+            position: relative; background: white; transition: all 0.3s ease;
+        }
+        .game-item.locked { border-color: #bfdbfe; background: #eff6ff; opacity: 0.7; }
+        .game-item.unlocked { border-color: #86efac; background: #f0fdf4; opacity: 1; }
+        
+        .game-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .game-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .game-name { font-weight: 800; font-size: 0.95rem; color: #1e1b4b; }
+        .game-rec { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
+        .game-status { font-size: 0.7rem; font-weight: 800; margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+        .status-ok { color: #16a34a; } 
+        .status-err { color: #2563eb; }
+
+        .badge { padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; color: white; }
+        .badge-easy { background: #22c55e; }
+        .badge-medium { background: #f59e0b; }
+        .badge-hard { background: #ef4444; }
+
+        /* DIFFICULTY PANEL */
+        .diff-opt {
+            padding: 15px; border-radius: 15px; border: 2px solid #f3f4f6;
+            cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; transition: 0.2s;
+        }
+        .diff-opt:hover { border-color: #ddd; background: #fafafa; }
+        .diff-opt.active { border-color: #fde047; background: #fefce8; position: relative; }
+        .diff-opt.active::after { content: '✓'; position: absolute; right: 15px; color: #22c55e; font-weight: 900; }
+        .diff-dot { width: 16px; height: 16px; border-radius: 50%; }
+
+        .summary-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .summary-table td { padding: 10px 0; font-size: 0.85rem; font-weight: 700; color: #4b5563; border-bottom: 1px solid #f3f4f6; }
+        .summary-val { text-align: right; color: #9333ea; font-weight: 900; }
+
+        /* SAVE BAR */
+        .save-bar { position: fixed; bottom: 0; width: 100%; background: white; padding: 20px; display: flex; justify-content: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; }
+        .save-btn { background: #ec4899; color: white; border: none; padding: 14px 60px; border-radius: 14px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .save-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div>
+        <h1 class="page-title">🔒 Content Restrictions</h1>
+        <div class="page-sub">Set difficulty level to unlock games as your child progresses</div>
+        <div class="page-note">💡 Age ranges are recommendations only – games unlock based on difficulty level</div>
+    </div>
+    <div class="top-right">
+        <div class="saved-badge" id="saveIndicator">✅ Saved Successfully!</div>
+        <a href="profile.html" class="back-btn">🏠 Back to Profile</a>
+    </div>
+</div>
+
+<div class="quick-row">
+    <button class="quick-btn allow-btn" onclick="toggleAllCategories(true)">🔓 Allow All</button>
+    <button class="quick-btn restrict-btn" onclick="toggleAllCategories(false)">🔒 Restrict All</button>
+</div>
+
+<div class="main-grid">
+    <div class="left-col">
+        <div class="card">
+            <div class="card-title">🛡️ Activity Categories</div>
+            <div class="cat-item cat-blue">
+                📺 <div class="cat-info"><div class="cat-name">Video Learning</div><div class="cat-sub">Educational videos and tutorials</div></div>
+                <label class="switch"><input type="checkbox" class="cat-check" checked id="cat-videos"><span class="slider"></span></label>
+            </div>
+            <div class="cat-item cat-pink">
+                🎨 <div class="cat-info"><div class="cat-name">Drawing Canvas</div><div class="cat-sub">Creative drawing and coloring tools</div></div>
+                <label class="switch"><input type="checkbox" class="cat-check" checked id="cat-drawing"><span class="slider"></span></label>
+            </div>
+            <div class="cat-item cat-green">
+                🎮 <div class="cat-info"><div class="cat-name">Interactive Games</div><div class="cat-sub">All learning games and activities</div></div>
+                <label class="switch"><input type="checkbox" class="cat-check" checked id="cat-games"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <div class="card-title" style="margin-left:10px">Individual Game Controls</div>
+        <div class="game-grid" id="gameContainer"></div>
+    </div>
+
+    <div class="right-col">
+        <div class="card">
+            <div class="card-title">🎯 Difficulty Level</div>
+            <div class="diff-opt" onclick="setDifficulty('easy')" id="opt-easy">
+                <div class="diff-dot" style="background:#22c55e"></div>
+                <div><div class="cat-name">Easy</div><div class="cat-sub">Unlocks 4 games</div></div>
+            </div>
+            <div class="diff-opt" onclick="setDifficulty('medium')" id="opt-medium">
+                <div class="diff-dot" style="background:#f59e0b"></div>
+                <div><div class="cat-name">Medium</div><div class="cat-sub">Unlocks 6 games</div></div>
+            </div>
+            <div class="diff-opt" onclick="setDifficulty('hard')" id="opt-hard">
+                <div class="diff-dot" style="background:#ef4444"></div>
+                <div><div class="cat-name">Hard</div><div class="cat-sub">Unlocks all 8 games</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Quick Summary</div>
+            <table class="summary-table">
+                <tr><td>Difficulty Level:</td><td class="summary-val" id="sum-diff">Medium</td></tr>
+                <tr><td>Unlocked Games:</td><td class="summary-val" id="sum-count">6 / 8</td></tr>
+                <tr><td>Locked by Difficulty:</td><td class="summary-val" id="sum-locked">2</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="save-bar">
+    <button class="save-btn" onclick="saveSettings()">💾 Save Restrictions</button>
+</div>
+
+<script>
+    const gamesData = [
+        { id: 'alphabet', name: "Alphabet Adventure", icon: "abc", bg: "#dcfce7", color: "#15803d", rec: "3-6", diff: "easy" },
+        { id: 'numbers', name: "Number Ninja", icon: "123", bg: "#eff6ff", color: "#1d4ed8", rec: "4-7", diff: "easy" },
+        { id: 'shapes', name: "Shape Sorter", icon: "⭐", bg: "#fefce8", color: "#a16207", rec: "3-6", diff: "easy" },
+        { id: 'colors', name: "Color Splash", icon: "🎨", bg: "#fdf2f8", color: "#be185d", rec: "3-5", diff: "easy", note: "ℹ️ Age limit" },
+        { id: 'memory', name: "Memory Match", icon: "🧠", bg: "#f5f3ff", color: "#6d28d9", rec: "5-8", diff: "medium" },
+        { id: 'math', name: "Math Master", icon: "➕", bg: "#f0fdf4", color: "#16a34a", rec: "6-10", diff: "medium" },
+        { id: 'spelling', name: "Spelling Bee", icon: "🐝", bg: "#fff7ed", color: "#c2410c", rec: "7-12", diff: "hard" },
+        { id: 'puzzle', name: "Puzzle Master", icon: "🧩", bg: "#eff6ff", color: "#1d4ed8", rec: "8-12", diff: "hard" }
+    ];
+
+    // INITIAL STATE: Load from localStorage or use defaults
+    let state = JSON.parse(localStorage.getItem('kidLearnSettings')) || {
+        difficulty: 'medium',
+        blockedGames: [], // IDs of games manually turned OFF
+        categories: { videos: true, drawing: true, games: true }
+    };
+
+    function setDifficulty(level) {
+        state.difficulty = level;
+        updateUI();
+    }
+
+    function toggleAllCategories(val) {
+        state.categories.videos = val;
+        state.categories.drawing = val;
+        state.categories.games = val;
+        document.querySelectorAll('.cat-check').forEach(c => c.checked = val);
+        updateUI();
+    }
+
+    function manualGameToggle(gameId, isChecked) {
+        if (!isChecked) {
+            if (!state.blockedGames.includes(gameId)) state.blockedGames.push(gameId);
+        } else {
+            state.blockedGames = state.blockedGames.filter(id => id !== gameId);
+        }
+        updateUI();
+    }
+
+    function checkDifficultyUnlock(gameDiff, selectedDiff) {
+        if (selectedDiff === 'hard') return true;
+        if (selectedDiff === 'medium') return gameDiff === 'easy' || gameDiff === 'medium';
+        return gameDiff === 'easy';
+    }
+
+    function updateUI() {
+        // 1. Update Difficulty Buttons
+        document.querySelectorAll('.diff-opt').forEach(el => el.classList.remove('active'));
+        document.getElementById(`opt-${state.difficulty}`).classList.add('active');
+
+        // 2. Render Game Cards
+        const container = document.getElementById('gameContainer');
+        container.innerHTML = '';
+        let unlockedCount = 0;
+
+        gamesData.forEach(game => {
+            const allowedByDiff = checkDifficultyUnlock(game.diff, state.difficulty);
+            const manuallyBlocked = state.blockedGames.includes(game.id);
+            const isCurrentlyActive = allowedByDiff && !manuallyBlocked;
+            
+            if (isCurrentlyActive) unlockedCount++;
+
+            const card = document.createElement('div');
+            card.className = `game-item ${isCurrentlyActive ? 'unlocked' : 'locked'}`;
+            
+            card.innerHTML = `
+                <div class="game-top">
+                    <div style="display:flex; gap:10px;">
+                        <div class="game-icon" style="background:${game.bg}; color:${game.color};">${game.icon}</div>
+                        <div>
+                            <div class="game-name">${game.name}</div>
+                            <div class="game-rec">Recommended: ${game.rec}</div>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" ${isCurrentlyActive ? 'checked' : ''} 
+                               onchange="manualGameToggle('${game.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="game-status ${isCurrentlyActive ? 'status-ok' : 'status-err'}">
+                        ${isCurrentlyActive ? '✓ Unlocked' : (manuallyBlocked ? '🚫 Blocked' : '🔒 Locked')}
+                    </div>
+                    <span class="badge badge-${game.diff}">${game.diff}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // 3. Update Summary
+        document.getElementById('sum-diff').textContent = state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1);
+        document.getElementById('sum-count').textContent = `${unlockedCount} / 8`;
+        document.getElementById('sum-locked').textContent = 8 - unlockedCount;
+    }
+
+    // Run on load
+    document.getElementById('cat-videos').checked = state.categories.videos;
+    document.getElementById('cat-drawing').checked = state.categories.drawing;
+    document.getElementById('cat-games').checked = state.categories.games;
+    updateUI();
+</script>
+
+<script>
+function saveSettings() {
+    console.log("🔥 Save button clicked");
+
+    state.categories.videos = document.getElementById('cat-videos').checked;
+    state.categories.drawing = document.getElementById('cat-drawing').checked;
+    state.categories.games = document.getElementById('cat-games').checked;
+
+    localStorage.setItem('kidLearnSettings', JSON.stringify(state));
+
+    const indicator = document.getElementById('saveIndicator');
+    indicator.style.display = 'block';
+    setTimeout(() => indicator.style.display = 'none', 3000);
+}
+</script>
+
+</body>
+</html>
