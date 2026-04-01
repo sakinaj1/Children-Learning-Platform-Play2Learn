@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Watch & Learn – KidLearn</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    
+    body { 
+        background: linear-gradient(135deg, #db96bd 0%, #fbcfe8 100%); 
+        min-height: 100vh; 
+        margin: 0;
+        padding-bottom: 40px;
+    }
+
+    /* Adjusted Container: Less side margin, more width */
+    .container {
+        max-width: 1200px; /* Increased from 1000px */
+        margin: 0 auto;
+        padding: 0 25px; /* Decreased from 40px */
+    }
+
+    /* TOP BAR */
+    .top-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 25px 0;
+    }
+    .page-title { font-size: 2.2rem; font-weight: 800; color: #be185d; margin: 0; }
+    .page-sub { font-size: 1rem; color: #be185d; opacity: 0.8; font-weight: 600; }
+    
+    .home-btn {
+        background: white; border-radius: 10px; padding: 10px 20px;
+        text-decoration: none; color: #333; font-weight: 600;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    /* STATS BANNER */
+    .stats-banner {
+        background: linear-gradient(90deg, #7c3aed, #db2777);
+        border-radius: 20px; padding: 20px;
+        display: grid; grid-template-columns: repeat(3, 1fr); 
+        text-align: center; color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 20px rgba(124, 58, 237, 0.15);
+    }
+    .stat-v { font-size: 1.8rem; font-weight: 800; }
+    .stat-l { font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-divider { border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2); }
+
+    /* TABS */
+    .tabs {
+        display: flex; gap: 12px; margin-bottom: 25px;
+    }
+    .tab {
+        flex: 1; padding: 12px; border-radius: 12px;
+        background: white; border: none; cursor: pointer;
+        font-weight: 700; color: #6b7280; font-size: 1rem;
+        transition: 0.3s;
+    }
+    .tab.active { background: #be185d; color: white; box-shadow: 0 4px 10px rgba(190, 24, 93, 0.3); }
+
+    /* VIDEO GRID (2 Rectangles per line) */
+    .video-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        gap: 20px;
+    }
+
+    .video-card {
+        background: white; border-radius: 20px; overflow: hidden;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        transition: 0.3s;
+    }
+    .video-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+
+    .video-thumb {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9; /* Sharp rectangular look */
+        background: #f9fafb;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+    }
+
+    .play-btn {
+        position: absolute; width: 55px; height: 55px; 
+        background: white; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; color: #be185d;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .duration-badge {
+        position: absolute; bottom: 10px; right: 10px;
+        background: rgba(0,0,0,0.75); color: white;
+        padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    }
+
+    .video-info { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .video-title { font-weight: 700; font-size: 1.05rem; color: #1f2937; }
+    
+    .watch-btn {
+        background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8;
+        padding: 7px 15px; border-radius: 8px; font-weight: 700;
+        cursor: pointer; transition: 0.2s;
+    }
+    .watch-btn:hover { background: #be185d; color: white; }
+
+    /* Modal Styling */
+    .modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+        display: none; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+        background: white; border-radius: 25px; padding: 25px;
+        width: 95%; max-width: 850px; text-align: center;
+    }
+    .fake-player {
+        background: #000; width: 100%; aspect-ratio: 16/9;
+        border-radius: 15px; margin: 20px 0;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 1.2rem;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <div>
+            <h1 class="page-title">📺 Watch & Learn</h1>
+            <div class="page-sub">Fun educational videos for you!</div>
+        </div>
+        <a href="home.html" class="home-btn">🏠 Home</a>
+    </div>
+
+    <div class="stats-banner">
+        <div><div class="stat-v" id="stat-watched">0</div><div class="stat-l">Videos Watched</div></div>
+        <div class="stat-divider"><div class="stat-v" id="stat-time">0m</div><div class="stat-l">Learning Time</div></div>
+        <div><div class="stat-v" id="stat-rank" style="font-size: 1.4rem;">🌱 Novice</div><div class="stat-l">Video Master</div></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab" onclick="setTab(this,'abc')">🔤 ABCs</button>
+        <button class="tab active" onclick="setTab(this,'123')">🔢 Numbers</button>
+        <button class="tab" onclick="setTab(this,'science')">🔬 Science</button>
+    </div>
+
+    <div class="video-grid" id="videoGrid"></div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal">
+        <h2 id="modalTitle" style="margin:0; color:#1f2937;">Video Title</h2>
+        <div class="fake-player">▶️ Playing Educational Content...</div>
+        <button onclick="document.getElementById('modalOverlay').classList.remove('show')" 
+                style="background:#ef4444; color:white; border:none; padding:12px 35px; border-radius:10px; font-weight:700; cursor:pointer;">
+            Close Video
+        </button>
+    </div>
+</div>
+
+<script>
+const videoData = {
+    abc: [
+        { title:'ABC Song', duration:'5:30', emoji:'🔤' },
+        { title:'Letter Sounds', duration:'4:15', emoji:'🗣️' },
+        { title:'Alphabet Train', duration:'6:00', emoji:'🚂' },
+        { title:'Big & Small', duration:'3:45', emoji:'📝' },
+    ],
+    '123': [
+        { title:'Counting 1-10', duration:'6:45', emoji:'🔢' },
+        { title:'Number Dance', duration:'4:30', emoji:'💃' },
+        { title:'Count with Me!', duration:'5:20', emoji:'🤝' },
+        { title:'Math for Kids', duration:'7:00', emoji:'🌿' },
+    ],
+    science: [
+        { title:'Plant Growth', duration:'8:00', emoji:'🌱' },
+        { title:'Water Cycle', duration:'6:30', emoji:'💧' },
+        { title:'Animal Homes', duration:'7:15', emoji:'🦁' },
+        { title:'Space Fun', duration:'9:00', emoji:'🚀' },
+    ],
+};
+
+let currentTab = '123';
+
+function setTab(el, tab) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    currentTab = tab;
+    renderVideos();
+}
+
+function renderVideos() {
+    const vids = videoData[currentTab];
+    const grid = document.getElementById('videoGrid');
+    grid.innerHTML = '';
+    vids.forEach(v => {
+        grid.innerHTML += `
+            <div class="video-card">
+                <div class="video-thumb" onclick="openModal('${v.title}', '${v.duration}')">
+                    <div style="font-size:3.5rem;">${v.emoji}</div>
+                    <div class="play-btn">▶</div>
+                    <div class="duration-badge">${v.duration}</div>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">${v.title}</div>
+                    <button class="watch-btn" onclick="openModal('${v.title}', '${v.duration}')">Watch</button>
+                </div>
+            </div>`;
+    });
+}
+
+let videoStats = JSON.parse(localStorage.getItem('kidVideoStats')) || { watched: 0, timeMins: 0 };
+
+function updateVideoStatsUI() {
+    document.getElementById('stat-watched').innerText = videoStats.watched;
+    
+    let totalMins = Math.floor(videoStats.timeMins);
+    let h = Math.floor(totalMins / 60);
+    let m = totalMins % 60;
+    document.getElementById('stat-time').innerText = h > 0 ? `${h}h ${m}m` : `${m}m`;
+
+    let rank = '🌱 Novice';
+    if (videoStats.watched >= 5) rank = '⭐ Learner';
+    if (videoStats.watched >= 15) rank = '🏆 Master';
+    document.getElementById('stat-rank').innerText = rank;
+}
+
+function openModal(title, durationStr) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalOverlay').classList.add('show');
+    
+    // Simulate watching the video by adding its stats immediately 
+    if(durationStr) {
+        const parts = durationStr.split(':');
+        const mins = parseInt(parts[0], 10) + (parseInt(parts[1], 10) / 60);
+        videoStats.watched += 1;
+        videoStats.timeMins += mins;
+        localStorage.setItem('kidVideoStats', JSON.stringify(videoStats));
+        updateVideoStatsUI();
+    }
+}
+
+function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay'))
+        document.getElementById('modalOverlay').classList.remove('show');
+}
+
+updateVideoStatsUI();
+renderVideos();
+</script>
+</body>
+</html>
