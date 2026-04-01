@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Games – KidLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef9c3 0%, #ffcc99 100%);
+            margin: 0;
+            padding: 20px 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #b45309;
+            margin: 0;
+        }
+
+        .home-btn {
+            background: white;
+            border-radius: 10px;
+            padding: 8px 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Featured Banner */
+        .featured-banner {
+            background: linear-gradient(to right, #d946ef, #ec4899);
+            border-radius: 24px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 35px;
+            box-shadow: 0 10px 25px rgba(217, 70, 239, 0.3);
+        }
+
+        .featured-content {
+            max-width: 55%;
+        }
+
+        .feat-badge {
+            background: #facc15;
+            color: #854d0e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .featured-banner h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            font-weight: 800;
+        }
+
+        .play-now {
+            display: inline-block;
+            background: white;
+            color: #db2777;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-weight: 800;
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .play-now:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            color: #be185d;
+        }
+
+        .play-now:active {
+            transform: translateY(1px);
+        }
+
+        .featured-img {
+            width: 450px;
+            height: 200px;
+            background: url('https://images.unsplash.com/photo-1510070112810-d4e9a46d9e91?auto=format&fit=crop&w=500') center/cover;
+            border-radius: 20px;
+        }
+
+        /* Game Grid - 4 per row */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        /* Links wrapped around cards */
+        .game-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .card-top {
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+        }
+
+        .dots {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            background: #facc15;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        .card-body {
+            padding: 20px;
+            background: #fffcf8;
+            border-top: 1px solid #f3f4f6;
+            min-height: 130px;
+        }
+
+        .diff-tag {
+            position: absolute;
+            top: 155px;
+            right: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .easy {
+            background: #22c55e;
+        }
+
+        .medium {
+            background: #f59e0b;
+        }
+
+        .hard {
+            background: #ef4444;
+        }
+
+        .game-name {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #1e1b4b;
+            margin-bottom: 5px;
+        }
+
+        .game-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .cat-tag {
+            background: white;
+            color: #4b5563;
+            font-size: 0.75rem;
+            padding: 3px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Colors */
+        .c-blue {
+            background: #0ea5e9;
+        }
+
+        .c-green {
+            background: #10b981;
+        }
+
+        .c-pink {
+            background: #ec4899;
+        }
+
+        .c-orange {
+            background: #f97316;
+        }
+
+        .c-gold {
+            background: #f59e0b;
+        }
+
+        .c-indigo {
+            background: #6366f1;
+        }
+
+        .c-teal {
+            background: #14b8a6;
+        }
+
+        .c-rose {
+            background: #fb7185;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            opacity: 0.8;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <div>
+                <h1 class="page-title">🎮 Fun Games</h1>
+                <p style="color: #b45309; font-weight: 600; margin: 0;">Choose a game and start learning!</p>
+            </div>
+            <a href="home.html" class="home-btn">🏠 Home</a>
+        </div>
+
+        <div class="featured-banner" id="featuredBanner">
+            <div class="featured-content">
+                <div class="feat-badge" id="featBadge">🕒 Recently Played</div>
+                <h1 id="featTitle">Alphabet Adventure</h1>
+                <p id="featDesc">Join our friendly characters on an exciting journey through the alphabet!</p>
+                <button class="play-now" id="featBtn" onclick="openGame('alphabet')">▶ Play Now</button>
+            </div>
+            <div class="featured-img" id="featImg"></div>
+        </div>
+        <div class="game-grid">
+
+            <a href="#" onclick="openGame('alphabet')" class="game-link" id="alphabet">
+                <div class="game-card">
+                    <div class="card-top c-blue">
+                        <div
+                            style="background: white; border-radius: 8px; padding: 6px 14px; font-size: 1.4rem; font-weight: 900; color: #0ea5e9;">
+                            abc</div>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag easy">Easy</span>
+                        <div class="game-name">Alphabet Adventure</div>
+                        <div class="game-desc">Learn your ABCs with fun!</div>
+                        <span class="cat-tag">Language</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('numbers')" class="game-link" id="numbers">
+                <div class="game-card">
+                    <div class="card-top c-green">
+                        <div
+                            style="background: white; border-radius: 8px; padding: 6px 14px; font-size: 1.1rem; font-weight: 900; color: #10b981; text-align:center; line-height:1;">
+                            1 2<br>3 4</div>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag easy">Easy</span>
+                        <div class="game-name">Number Ninja</div>
+                        <div class="game-desc">Master counting 1-10</div>
+                        <span class="cat-tag">Math</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('shapes')" class="game-link" id="shapes">
+                <div class="game-card">
+                    <div class="card-top c-pink">
+                        <span>⭐</span>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag easy">Easy</span>
+                        <div class="game-name">Shape Sorter</div>
+                        <div class="game-desc">Match the shapes!</div>
+                        <span class="cat-tag">Logic</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('colors')" class="game-link" id="colors">
+                <div class="game-card">
+                    <div class="card-top c-orange">
+                        <span>🌈</span>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag easy">Easy</span>
+                        <div class="game-name">Color Splash</div>
+                        <div class="game-desc">Learn colors through play</div>
+                        <span class="cat-tag">Art</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('memory')" class="game-link" id="memory">
+                <div class="game-card">
+                    <div class="card-top c-gold">
+                        <span>🧠</span>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag medium">Medium</span>
+                        <div class="game-name">Memory Match</div>
+                        <div class="game-desc">Find the pairs!</div>
+                        <span class="cat-tag">Memory</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('math')" class="game-link" id="math">
+                <div class="game-card">
+                    <div class="card-top c-indigo">
+                        <span>➕</span>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag medium">Medium</span>
+                        <div class="game-name">Math Master</div>
+                        <div class="game-desc">Addition & Subtraction</div>
+                        <span class="cat-tag">Math</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('spelling')" class="game-link" id="spelling">
+                <div class="game-card">
+                    <div class="card-top c-teal">
+                        <span>🐝</span>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag hard">Hard</span>
+                        <div class="game-name">Spelling Bee</div>
+                        <div class="game-desc">Build words letter by letter</div>
+                        <span class="cat-tag">Language</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" onclick="openGame('puzzle')" class="game-link" id="puzzle">
+                <div class="game-card">
+                    <div class="card-top c-rose">
+                        <span>🧩</span>
+                        <div class="dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <span class="diff-tag hard">Hard</span>
+                        <div class="game-name">Puzzle Master</div>
+                        <div class="game-desc">Solve fun puzzles!</div>
+                        <span class="cat-tag">Logic</span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+    <script>
+        const gamesList = ["alphabet", "numbers", "colors", "shapes", "math", "spelling", "memory", "puzzle"];
+        const GAMES_INFO = {
+            'alphabet': 'easy', 'numbers': 'easy', 'shapes': 'easy', 'colors': 'easy',
+            'memory': 'medium', 'math': 'medium', 'spelling': 'hard', 'puzzle': 'hard'
+        };
+
+        function isLocked(game) {
+            let state = JSON.parse(localStorage.getItem('kidLearnSettings'));
+            if (!state) return false;
+
+            if (state.categories && !state.categories.games) return true;
+            if (state.blockedGames && state.blockedGames.includes(game)) return true;
+
+            const gameDiff = GAMES_INFO[game];
+            const diff = state.difficulty || 'medium';
+
+            if (diff === 'easy' && gameDiff !== 'easy') return true;
+            if (diff === 'medium' && gameDiff === 'hard') return true;
+
+            return false;
+        }
+
+        function openGame(game) {
+            if (isLocked(game)) {
+                alert("🔒 Game Locked by Parent");
+            } else {
+                localStorage.setItem('lastPlayedGame', game);
+                window.location.href = game + ".html";
+            }
+        }
+
+        function checkLocks() {
+            gamesList.forEach(game => {
+                const card = document.getElementById(game);
+                if (!card) return;
+
+                if (isLocked(game)) {
+                    card.style.pointerEvents = "none";
+                    card.style.opacity = "0.6";
+
+                    if (!card.querySelector(".lock-icon")) {
+                        const lock = document.createElement("span");
+                        lock.innerText = "🔒";
+                        lock.className = "lock-icon";
+                        lock.style.position = "absolute";
+                        lock.style.top = "10px";
+                        lock.style.right = "10px";
+                        card.querySelector(".game-card").appendChild(lock);
+                    }
+                }
+            });
+        }
+
+        const bannerData = {
+            'alphabet': { title: 'Alphabet Adventure', desc: 'Join our friendly characters on an exciting journey through the alphabet!', img: 'https://images.unsplash.com/photo-1510070112810-d4e9a46d9e91?auto=format&fit=crop&w=500' },
+            'numbers': { title: 'Number Ninja', desc: 'Master counting from 1 to 10 with ninja precision!', img: 'https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&w=500' },
+            'shapes': { title: 'Shape Sorter', desc: 'Match the shapes and learn about geometry!', img: 'https://images.unsplash.com/photo-1596461404969-9ce20c71c7e7?auto=format&fit=crop&w=500' },
+            'colors': { title: 'Color Splash', desc: 'Mix, match, and learn the colors of the rainbow!', img: 'https://images.unsplash.com/photo-1525909002-1b05e0c869d8?auto=format&fit=crop&w=500' },
+            'memory': { title: 'Memory Match', desc: 'Train your brain by finding pairs of hidden items!', img: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=500' },
+            'math': { title: 'Math Master', desc: 'Solve fun addition and subtraction problems!', img: 'https://images.unsplash.com/photo-1518133835878-5a93ac3f000c?auto=format&fit=crop&w=500' },
+            'spelling': { title: 'Spelling Bee', desc: 'Build words letter by letter to become a champion!', img: 'https://images.unsplash.com/photo-1555304387-a2e61a6c0efd?auto=format&fit=crop&w=500' },
+            'puzzle': { title: 'Puzzle Master', desc: 'Piece together beautiful images and boost your logic!', img: 'https://images.unsplash.com/photo-1611095973763-414019e72400?auto=format&fit=crop&w=500' }
+        };
+
+        function setupBanner() {
+            let lastGame = localStorage.getItem('lastPlayedGame');
+            if (!lastGame || !bannerData[lastGame]) {
+                lastGame = 'alphabet'; 
+                document.getElementById('featBadge').innerText = '⭐ Featured Game';
+            } else {
+                document.getElementById('featBadge').innerText = '🕒 Recently Played';
+            }
+            const data = bannerData[lastGame];
+            document.getElementById('featTitle').innerText = data.title;
+            document.getElementById('featDesc').innerText = data.desc;
+            document.getElementById('featImg').style.backgroundImage = `url('${data.img}')`;
+            document.getElementById('featBtn').onclick = () => openGame(lastGame);
+        }
+
+        // 🔥 RUN ON PAGE LOAD
+        window.onload = function () {
+            checkLocks();
+            applyTheme();
+            setupBanner();
+        }
+
+        function applyTheme() {
+            const themes = {
+                'rainbow': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)',
+                'ocean': 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+                'sunset': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                'forest': 'linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)'
+            };
+            const currentTheme = localStorage.getItem('kidTheme');
+            if (currentTheme && themes[currentTheme]) {
+                document.body.style.background = themes[currentTheme];
+            }
+        }
+    </script>
+
+</body>
+
+</html>

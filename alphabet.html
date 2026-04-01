@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alphabet Adventure – KidLearn</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-gradient: linear-gradient(135deg, #fbcfe8 0%, #e2e8f0 50%, #dbeafe 100%);
+        --purple: #7c3aed;
+    }
+    
+    body { 
+        font-family: 'Nunito', sans-serif;
+        background: var(--bg-gradient); 
+        min-height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        margin: 0;
+    }
+
+    /* TOP BAR - Standardized */
+    .top-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 20px 24px;
+    }
+    .game-title { display: flex; align-items: center; gap: 10px; font-size: 1.8rem; font-weight: 900; color: #2563eb; }
+    
+    .stats-group { display: flex; gap: 12px; align-items: center; }
+    .stat-box {
+        height: 45px; padding: 0 18px; border-radius: 12px;
+        font-weight: 800; display: flex; align-items: center; gap: 8px;
+        font-size: 1.1rem; text-decoration: none;
+    }
+    .stars { background: #facc15; color: #1e1b4b; box-shadow: 0 5px 0 #ca8a04; }
+    .home-btn { background: white; color: #1e1b4b; box-shadow: 0 5px 0 #e2e8f0; font-size: 1.4rem; }
+
+    /* PROGRESS - Standardized */
+    .prog-container { margin: 0 24px 15px; }
+    .prog-bar-wrap {
+        display: flex; align-items: center; gap: 14px;
+        background: white; border-radius: 15px; padding: 12px 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .prog-track { flex: 1; height: 16px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+    .prog-fill { height: 100%; background: #1e1b4b; border-radius: 999px; transition: width 0.5s ease; width: 0%; }
+    .prog-text { font-weight: 900; color: #374151; min-width: 50px; }
+
+    /* MAIN CARD */
+    .main-card {
+        margin: 0 24px; background: white; border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        flex: 1; display: flex; flex-direction: column; position: relative;
+    }
+
+    .letter-display {
+        background: #ef4444; border-radius: 24px 24px 0 0;
+        display: flex; align-items: center; justify-content: center;
+        min-height: 280px; position: relative; overflow: hidden;
+    }
+
+    .letter-box {
+        background: linear-gradient(135deg, #facc15, #f97316);
+        border-radius: 30px; padding: 40px 60px;
+        text-align: center; z-index: 2;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .big-letter { font-size: 7rem; font-weight: 900; color: white; display: block; line-height: 1; }
+    .letter-word { font-size: 1.8rem; font-weight: 800; color: white; margin-top: 10px; }
+
+    /* Score popup */
+    #scorePopup {
+        position: absolute; top: 20px; right: 20px; z-index: 10;
+        background: #22c55e; color: white; font-weight: 900;
+        padding: 12px 20px; border-radius: 15px; display: none;
+        animation: slideIn 0.3s ease;
+    }
+
+    /* ACTION BUTTONS */
+    .action-row { display: flex; justify-content: center; gap: 20px; padding: 25px; }
+    .btn {
+        border: none; border-radius: 16px; padding: 16px 32px;
+        font-size: 1.2rem; font-weight: 900; cursor: pointer;
+        display: flex; align-items: center; gap: 10px; transition: 0.2s;
+        color: white;
+    }
+    .btn-hear { background: #3b82f6; box-shadow: 0 6px 0 #1d4ed8; }
+    .btn-know { background: #22c55e; box-shadow: 0 6px 0 #15803d; }
+    .btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
+
+    /* LETTER STRIP (A-Z Row) */
+    .letter-row-wrap {
+        margin: 20px 24px; background: white; border-radius: 20px;
+        padding: 15px; display: flex; align-items: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .letter-strip { 
+        display: flex; gap: 10px; overflow-x: auto; flex: 1; 
+        padding-bottom: 5px; scroll-behavior: smooth;
+    }
+    .letter-strip::-webkit-scrollbar { height: 6px; }
+    .letter-strip::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+    .letter-btn {
+        min-width: 55px; height: 55px; border-radius: 12px;
+        border: none; font-size: 1.4rem; font-weight: 900;
+        cursor: pointer; background: #f3f4f6; color: #475569;
+        transition: 0.2s;
+    }
+    .letter-btn.active { background: #3b82f6; color: white; transform: scale(1.1); }
+    .letter-btn.done { background: #dcfce7; color: #15803d; }
+
+    .parrot { position: fixed; bottom: 85px; right: 30px; font-size: 3.5rem; z-index: 5; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="game-title">🍎 Alphabet Adventure</div>
+    <div class="stats-group">
+        <div class="stat-box stars">⭐ <span id="starCount">0</span></div>
+        <a href="games.html" class="stat-box home-btn">🏠</a>
+    </div>
+</div>
+
+<div class="prog-container">
+    <div class="prog-bar-wrap">
+        <span style="font-weight: 800;">Progress:</span>
+        <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+        <span class="prog-text" id="progText">1/26</span>
+    </div>
+</div>
+
+<div class="main-card">
+    <div class="letter-display" id="letterDisplay">
+        <div id="scorePopup">✨ Perfect! +10 Stars</div>
+        <div class="letter-box">
+            <span class="big-letter" id="bigLetter">A</span>
+            <div class="letter-word" id="letterWord">Apple 🍎</div>
+        </div>
+    </div>
+
+    <div class="action-row">
+        <button class="btn btn-hear" onclick="hearIt()">🔊 Hear it!</button>
+        <button class="btn btn-know" onclick="iKnowIt()">I Know It! ✓</button>
+    </div>
+    <div style="display:flex; justify-content:center; padding-bottom:20px;">
+        <button class="btn" id="hintBtn" onclick="showHint('Learn each letter of the alphabet and its matching word!')" style="display:none; background:#facc15; box-shadow:0 6px 0 #ca8a04; color:#1e1b4b; font-weight:900;">💡 Show Hints</button>
+    </div>
+</div>
+
+<div class="letter-row-wrap">
+    <div class="letter-strip" id="letterStrip"></div>
+</div>
+
+<div class="parrot">🦜</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+const words = {
+    A:'Apple 🍎', B:'Ball ⚽', C:'Cat 🐱', D:'Dog 🐶', E:'Elephant 🐘', F:'Fish 🐟', G:'Giraffe 🦒', H:'Hat 🎩',
+    I:'Ice cream 🍦', J:'Juice 🍹', K:'Kite 🪁', L:'Lion 🦁', M:'Moon 🌙', N:'Nest 🪺', O:'Orange 🍊', P:'Parrot 🦜',
+    Q:'Queen 👸', R:'Rainbow 🌈', S:'Sun ☀️', T:'Tree 🌳', U:'Umbrella ☂️', V:'Violin 🎻', W:'Whale 🐳', X:'Xylophone 🎶',
+    Y:'Yellow 💛', Z:'Zebra 🦓'
+};
+const letters = Object.keys(words);
+
+const kidId = localStorage.getItem('childName') || 'default';
+const storeKey = 'abc_done_' + kidId;
+let storedDone = JSON.parse(localStorage.getItem(storeKey) || '[]');
+// Defensive logic: if already full from a past session, reset it to 0 so they can play again
+if (storedDone.length >= 26) {
+    storedDone = [];
+    localStorage.removeItem(storeKey);
+}
+let doneLetters = new Set(storedDone);
+
+let currentIdx = 0;
+while(doneLetters.has(currentIdx) && currentIdx < 26) {
+    currentIdx++;
+}
+if(currentIdx >= 26) currentIdx = 0;
+let stars = parseInt(localStorage.getItem('stars') || '0');
+
+document.getElementById('starCount').textContent = stars;
+
+// Initialize the A-Z Strip
+const strip = document.getElementById('letterStrip');
+letters.forEach((l, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'letter-btn' + (doneLetters.has(i) ? ' done' : '');
+    if(i === 0) btn.classList.add('active');
+    btn.textContent = l;
+    btn.onclick = () => selectLetter(i);
+    strip.appendChild(btn);
+});
+
+function selectLetter(idx) {
+    currentIdx = idx;
+    const l = letters[idx];
+    document.getElementById('bigLetter').textContent = l;
+    document.getElementById('letterWord').textContent = words[l];
+    
+    // Update button states
+    document.querySelectorAll('.letter-btn').forEach((b, i) => {
+        b.classList.remove('active');
+        if(i === idx) b.classList.add('active');
+    });
+
+    updateProgress();
+    speak(`${l} is for ${words[l].split(' ')[0]}`);
+}
+
+let isSubmitting = false;
+
+function updateProgress() {
+    const total = letters.length;
+    const progress = doneLetters.size;
+    const pct = (progress / total) * 100;
+    document.getElementById('progFill').style.width = pct + '%';
+    document.getElementById('progText').textContent = `${progress}/${total}`;
+
+    if (progress === total && !isSubmitting) {
+        isSubmitting = true;
+        
+        // Clear local storage here so when they return it's fresh
+        localStorage.removeItem(storeKey);
+        
+        setTimeout(() => {
+            fetch("/submit_score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ game: 'alphabet', score: 100, stars: 50, time_spent: Math.floor(performance.now() / 1000) })
+            }).then(() => {
+                window.location.href = "rewards.html";
+            });
+        }, 1500);
+    }
+}
+
+function hearIt() {
+    const l = letters[currentIdx];
+    speak(`${l}... ${words[l].split(' ')[0]}`);
+}
+
+function iKnowIt() {
+    if(!doneLetters.has(currentIdx)) {
+        doneLetters.add(currentIdx);
+        localStorage.setItem(storeKey, JSON.stringify([...doneLetters]));
+        
+        stars += 10;
+        localStorage.setItem('stars', stars);
+        document.getElementById('starCount').textContent = stars;
+
+        // Show Feedback
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        const pop = document.getElementById('scorePopup');
+        pop.style.display = 'block';
+        setTimeout(() => pop.style.display = 'none', 1500);
+
+        // Mark button as done
+        document.querySelectorAll('.letter-btn')[currentIdx].classList.add('done');
+    }
+
+    // Auto-advance to next letter after 1.5 seconds
+    if(currentIdx < letters.length - 1) {
+        setTimeout(() => selectLetter(currentIdx + 1), 1500);
+    }
+}
+
+function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate = 0.9;
+    window.speechSynthesis.speak(utt);
+}
+
+// Hint logic
+document.addEventListener("DOMContentLoaded", () => {
+    let hintsOn = localStorage.getItem('showHints');
+    hintsOn = (hintsOn === null) ? true : JSON.parse(hintsOn);
+    if (hintsOn) document.getElementById('hintBtn').style.display = 'flex';
+});
+function showHint(msg) {
+    document.getElementById('hintText').innerText = msg;
+    document.getElementById('hintModal').style.display = 'flex';
+}
+function closeHint() {
+    document.getElementById('hintModal').style.display = 'none';
+}
+
+// Initial setup
+updateProgress();
+</script>
+
+<!-- Custom Hint Modal -->
+<div id="hintModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:24px; box-shadow:0 10px 40px rgba(0,0,0,0.25); max-width:400px; width:90%; text-align:center; transform: scale(1); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <h2 style="margin-top:0; color:#2563eb; font-size:2rem; font-weight:900;">💡 HINT</h2>
+        <p id="hintText" style="font-size:1.3rem; color:#475569; margin:20px 0; font-weight:800; line-height:1.5;"></p>
+        <button onclick="closeHint()" style="background:#facc15; color:#1e1b4b; border:none; padding:12px 35px; border-radius:15px; font-weight:900; font-size:1.2rem; cursor:pointer; box-shadow:0 6px 0 #ca8a04; transition: all 0.2s;">Got It!</button>
+    </div>
+</div>
+
+<style>
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+</style>
+
+</body>
+</html>
